@@ -11,3 +11,4 @@ docker system df    --> Disk usage metrics
 docker system df -v   --> Disk usage metrics on a granular level
 docker logs mynginx   --> To see latest logs of a container
 docker run -d --rm --restart unless-stopped --name mynginx -p 80:80 nginx   --> To delete a container on exit
+8080:80 --> 8080 external port, 80 internal port
