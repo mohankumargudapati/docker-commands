@@ -4,6 +4,7 @@ docker container ls -a/ docker ps -a    --> To list all containers
 docker container stop $(docker container ls -aq)    --> To stop all the running containers
 docker container rm $(docker container ls -aq)    --> To remove all the containers
 docker rmi nginx    --> To delete docker images
+docker rmi -f $(docker images -aq) --> To remove all images forcefully
 docker container exec -it mynginx bash    --> Run a command in a running container with interactive console
 docker run -d --restart unless-stopped --name mynginx -p 80:80 nginx    --> Restart policies
 docker run -d --restart unless-stopped --name mynginx -p 80:80 nginx sleep 500    --> Overriding Default container command
@@ -12,3 +13,4 @@ docker system df -v   --> Disk usage metrics on a granular level
 docker logs mynginx   --> To see latest logs of a container
 docker run -d --rm --restart unless-stopped --name mynginx -p 80:80 nginx   --> To delete a container on exit
 8080:80 --> 8080 external port, 80 internal port
+docker container prune --> Removes all stopped containers
