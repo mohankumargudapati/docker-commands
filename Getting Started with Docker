@@ -1,16 +1,67 @@
-docker pull nginx   --> Pulls docker image
-docker run -d --name mynginx -p 80:80 nginx   --> To run docker container from docker image with port binding
-docker container ls -a/ docker ps -a    --> To list all containers
-docker container stop $(docker container ls -aq)    --> To stop all the running containers
-docker container rm $(docker container ls -aq)    --> To remove all the containers
-docker rmi nginx    --> To delete docker images
-docker rmi -f $(docker images -aq) --> To remove all images forcefully
-docker container exec -it mynginx bash    --> Run a command in a running container with interactive console
-docker run -d --restart unless-stopped --name mynginx -p 80:80 nginx    --> Restart policies
-docker run -d --restart unless-stopped --name mynginx -p 80:80 nginx sleep 500    --> Overriding Default container command
-docker system df    --> Disk usage metrics
-docker system df -v   --> Disk usage metrics on a granular level
-docker logs mynginx   --> To see latest logs of a container
-docker run -d --rm --restart unless-stopped --name mynginx -p 80:80 nginx   --> To delete a container on exit
-8080:80 --> 8080 external port, 80 internal port
-docker container prune --> Removes all stopped containers
+docker pull nginx   --> Pulls docker image.
+docker run -dt --name mynginx -p 80:80 nginx   --> To run docker container from docker image with port binding.(if container is exiting automatically try -d instead of -dt)
+docker container ls -a/ docker ps -a    --> To list all containers.
+docker container stop $(docker container ls -aq)    --> To stop all the running containers.
+docker container rm $(docker container ls -aq)    --> To remove all the containers.
+docker rmi nginx    --> To delete docker images.
+docker rmi -f $(docker images -aq) --> To remove all images forcefully.
+docker container exec -it mynginx bash    --> Run a command in a running container with interactive console.
+docker run -d --restart unless-stopped --name mynginx -p 80:80 nginx    --> Restart policies.
+docker run -d --restart unless-stopped --name mynginx -p 80:80 nginx sleep 500    --> Overriding Default container command.
+docker system df    --> Disk usage metrics.
+docker system df -v   --> Disk usage metrics on a granular level.
+docker logs mynginx   --> To see latest logs of a container.
+docker run -d --rm --restart unless-stopped --name mynginx -p 80:80 nginx   --> To delete a container on exit.
+8080:80 --> 8080 external port, 80 internal port.
+docker container prune --> Removes all stopped containers.
+
+
+
+brctl show / yum whatprovides brctl  --> To see docker bridge (apt-get install bridge-utils / yum install bridge-utils).
+docker network ls --> To list docker networks such as bridge,host,none,macvlan,overlay.
+docker network create --driver bridge mybridge --> To create new network driver.
+docker container run --name myhost --network mybridge -p 80:80 nginx --> To create container in specified bridge.
+docker network inspect bridge/host/etc --> To inspect networks
+In user defined bridges, we can connect to other containers in the same bridge with container name/dns.
+In default Bridge we cannot connect to other containers in the same bridge with container name/dns.
+In Docker, there are two types of bridge networks: the default bridge network and user-defined bridge networks. Here's the difference between the two:
+
+Default bridge network: The default bridge network is created automatically by Docker when you install it. This network provides a basic level of isolation between containers, allowing them to communicate with each other on the same host machine. However, it does not provide any DNS resolution for container names or container-to-container name resolution. Containers on the default bridge network are assigned an IP address from the same range as the Docker daemon's IP address, which can cause IP address conflicts in certain scenarios.
+
+User-defined bridge network: User-defined bridge networks are custom networks that you can create using Docker. These networks provide better isolation between containers than the default bridge network and allow you to control the IP addressing and DNS resolution for the containers on the network. User-defined bridge networks also allow you to specify network options such as the subnet range, gateway, and DNS servers.
+
+When you create a user-defined bridge network, Docker creates a bridge interface on the host machine and assigns it a unique name and subnet range. Containers connected to the user-defined bridge network are assigned IP addresses from the subnet range of the network. Containers on the same user-defined bridge network can communicate with each other using their container names or IP addresses.
+
+In summary, the default bridge network is a basic network that provides container-to-container communication on the same host, while the user-defined bridge network provides better isolation and control over IP addressing and DNS resolution for containers. The choice between the two depends on the specific requirements of your application or use case.
+
+Docker provides two types of networking for containers: bridge and host.
+
+When you use the bridge network mode, Docker creates a virtual network that isolates containers running on the host and provides a bridge for communication between containers and the host machine. By default, containers in bridge mode use a virtual network interface to communicate with the host machine and other containers.
+
+On the other hand, when you use the host network mode, the container shares the network stack with the host machine, effectively using the same network interface as the host. In this mode, the container has direct access to the host's network interfaces, routing tables, and DNS servers.
+
+Here are some scenarios when you might want to use the host network mode instead of the bridge network mode:
+
+Performance-sensitive applications: If your containerized application needs to communicate with other applications on the host machine, using the host network mode can provide better performance than the bridge network mode. This is because containers in the host network mode avoid the overhead of creating a virtual network interface.
+
+Network monitoring or packet capturing: If you need to capture network traffic between the container and the host machine, using the host network mode allows you to do so easily, as the container shares the same network stack as the host.
+
+Networking tools: If you're using networking tools such as tcpdump, netstat, or iptables inside the container to troubleshoot networking issues, the host network mode may be more convenient, as the tools behave the same way as they do on the host machine.
+
+It's worth noting that using the host network mode can also pose security risks, as the container is exposed to the same network interfaces as the host machine, potentially allowing it to access other containers or services running on the host. Therefore, it's important to consider the security implications before using the host network mode.
+
+You should use the bridge network mode in Docker when you want to isolate containers from each other and from the host machine, while still allowing them to communicate with each other.
+
+Here are some common scenarios where you might want to use the bridge network mode:
+
+Microservices architecture: If you're using Docker to deploy a microservices architecture, you might want to use the bridge network mode to isolate each microservice in its own container and provide a virtual network that allows the microservices to communicate with each other.
+
+Web application development: If you're developing a web application using Docker, you can use the bridge network mode to create a virtual network that connects your web server container to your application server container, allowing them to communicate with each other.
+
+Load balancing: If you're using Docker to deploy a load-balanced application, you can use the bridge network mode to create a virtual network that connects your load balancer container to your application server containers, allowing the load balancer to distribute traffic between the containers.
+
+Testing: If you're testing an application that requires multiple components, you can use the bridge network mode to create a virtual network that connects the different components, allowing you to test the application in a realistic environment.
+
+The bridge network mode is the default network mode in Docker, and it provides a good balance between isolation and communication. However, if you need to expose ports from the container to the host machine or to other containers, you'll need to configure port forwarding or use a different network mode such as host or overlay.
+
+docker container run --name webserver --network mybridge --restart unless-stopped -P ubuntu --> Here "-P" stands for publish all, it will assign random ports to the exposed container ports.
